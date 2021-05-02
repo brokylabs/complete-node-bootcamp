@@ -1,5 +1,6 @@
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
 
 // READ & WRITE FILE
 
@@ -30,8 +31,22 @@ const http = require('http');
 // SERVER
 
 const server  = http.createServer((req, res) => {
-    console.log(req);
-    res.end('Hello Node Server...!')
+    // console.log(req.url);
+    const pathName = req.url;
+
+    if(pathName === '/overview' || pathName === "/") {
+        res.end("This is Overview Pages ... ")
+    }else if (pathName === '/product'){
+        res.end("This is Product Pages ...")
+    } else {
+        res.writeHead(404, {
+            "Content-Type" : "text/html",
+            "my-own-header" : "hello World"
+        });
+        res.end('<h1>Page not Found!!!</h1>');
+    }
+    
+    // res.end('Hello Node Server...!')
 });
 
 server.listen(8000, '127.0.0.1', () => {
