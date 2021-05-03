@@ -29,6 +29,16 @@ const url = require('url');
 // console.log('Will read file!');
 
 // SERVER
+
+const replaceTemplate = (temp, product) => {
+    let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName)
+}
+
+
+const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8')
+const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8')
+const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8')
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
 const dataObj = JSON.parse(data);
 
@@ -36,13 +46,24 @@ const server  = http.createServer((req, res) => {
     // console.log(req.url);
     const pathName = req.url;
 
+    // Overview Page
     if(pathName === '/overview' || pathName === "/") {
-        res.end("This is Overview Pages ... ")
+        res.writeHead(200, {'Content-type' : 'text/html'});
+
+        const cardHtml = dataObj.map(el => replaceTemplate(tempCard, el))
+
+        res.end(tempOverview)
+
+    // Product Page
     }else if (pathName === '/product'){
-        res.end("This is Product Pages ...")
+        res.end(tempProduct)
+
+    // API Page
     } else if (pathName === "/api") {
             res.writeHead(200, {'Content-type' : 'application/json'});
             res.end(data);
+
+    // Not Found Page
     } else {
         res.writeHead(404, {
             "Content-Type" : "text/html",
